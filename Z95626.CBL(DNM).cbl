@@ -126,14 +126,32 @@
        H760-END. EXIT.
 
        H750-DELETE.
+
+
+           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
+           MOVE INP-ID         TO OUT-ID
+           MOVE INP-DVZ        TO OUT-DVZ
+           MOVE IDX-ST         TO OUT-RETURN-CODE
+           MOVE IDX-NAME       TO OUT-FNAME-FROM
+           MOVE SPACES         TO OUT-FNAME-TO
+           MOVE IDX-SRNAME     TO OUT-LNAME-FORM
+           MOVE SPACES         TO OUT-LNAME-TO.
+           
                DELETE IDX-FILE RECORD
                  NOT INVALID KEY
-                 DISPLAY 'DELETION SUCCESFULLY'
+                    IF IDX-ST = 00
+                       STRING 'BASARILISILMEGERCEKLESTI RC:'IDX-ST
+                       DELIMITED BY SIZE INTO OUT-ACIKLAMA
+                       DISPLAY 'BASARIILESILINDI'
+                    ELSE
+                       STRING 'BASARSIZSILMEGERCEKLESTI RC:'IDX-ST
+                       DELIMITED BY SIZE INTO OUT-ACIKLAMA
+                       DISPLAY 'HATAOLUSTU' IDX-ST
+                    END-IF
                END-DELETE.
-               IF IDX-ST = 00
-                    DISPLAY 'BASARIILESILINDI'
-               ELSE
-                    DISPLAY 'HATAOLUSTU' IDX-ST.
+
+           WRITE OUT-REC.
+           
        H750-END. EXIT.
 
        H210-INVALID-KEY.

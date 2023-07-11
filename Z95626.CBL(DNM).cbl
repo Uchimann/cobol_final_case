@@ -116,7 +116,7 @@
            MOVE INP-ID         TO OUT-ID
            MOVE INP-DVZ        TO OUT-DVZ
            MOVE IDX-ST         TO OUT-RETURN-CODE
-           STRING 'BASARILIOKUMAGERCEKLESTI RC:'IDX-ST 
+           STRING 'BASARILIOKUMAGERCEKLESTI RC:'IDX-ST
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            MOVE IDX-NAME       TO OUT-FNAME-FROM
            MOVE SPACES         TO OUT-FNAME-TO
@@ -148,7 +148,7 @@
       *islem tipi delete ise kismini yap
            ELSE IF WS-ISLEM-TIPI = 2
               COMPUTE WS-SUB-FUNC = 5
-           END-IF. 
+           END-IF.
            EVALUATE TRUE
               WHEN WS-FUNC-READ
                 PERFORM H760-READ

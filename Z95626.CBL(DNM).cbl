@@ -5,7 +5,7 @@
        FILE-CONTROL.
            SELECT IDX-FILE   ASSIGN TO IDXFILE
                              ORGANIZATION INDEXED
-                             ACCESS RANDOM
+                             ACCESS MODE RANDOM
                              RECORD KEY IDX-KEY
                              STATUS IDX-ST.
            SELECT INP-FILE ASSIGN TO INPFILE
@@ -16,7 +16,7 @@
        FILE SECTION.
        FD  OUT-FILE RECORDING MODE F.
          01  OUT-REC.
-           05 OUT-ISLEM-TIPI    PIC X(01).
+           05 OUT-ISLEM-TIPI    PIC 9(01).
            05 OUT-ID            PIC 9(05).
            05 OUT-DVZ           PIC 9(03).
            05 OUT-RETURN-CODE   PIC 9(02).
@@ -28,8 +28,8 @@
        FD  INP-FILE RECORDING MODE F.
          01  INP-REC.
            03 INP-ISLEM-TIPI    PIC 9(01).
-           03 INP-ID            PIC X(5).
-           03 INP-DVZ           PIC X(3).
+           03 INP-ID            PIC 9(5).
+           03 INP-DVZ           PIC 9(3).
        FD  IDX-FILE.
          01  IDX-REC.
            03 IDX-KEY.
@@ -57,6 +57,7 @@
                  88 WS-FUNC-READ           VALUE 2.
                  88 WS-FUNC-UPDATE         VALUE 3.
                  88 WS-FUNC-WRITE          VALUE 4.
+                 88 WS-FUNC-DELETE         VALUE 5.
                  88 WS-FUNC-CLOSE          VALUE 9.
               07 WS-SUB-ID      PIC 9(05).
               07 WS-SUB-DVZ     PIC 9(03).
@@ -91,7 +92,7 @@
            READ INP-FILE
            SET WS-FUNC-OPEN TO TRUE.
        H100-END. EXIT.
-       
+
        H400-SUBPROG2.
            MOVE INP-ID TO IDX-ID.
            MOVE INP-DVZ TO IDX-DVZ.
@@ -105,28 +106,36 @@
            PERFORM H400-SUBPROG2.
            READ INP-FILE.
        H200-END. EXIT.
-       
+
        H700-UPDATE.
            DISPLAY 'ISMAIL'.
        H700-END. EXIT.
 
        H760-READ.
-           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI 
-           MOVE IDX-ID         TO OUT-ID 
-           MOVE IDX-DVZ        TO OUT-DVZ 
-           MOVE IDX-NAME       TO OUT-FNAME-FROM 
-           MOVE SPACES         TO OUT-FNAME-TO 
-           MOVE IDX-SRNAME     TO OUT-LNAME-FORM 
-           MOVE SPACES         TO OUT-LNAME-TO 
-           MOVE IDX-ST         TO OUT-RETURN-CODE  
-           STRING 'BASARILIOKUMAGERCEKLESTI    ' 
-               IDX-ST 
+           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
+           MOVE INP-ID         TO OUT-ID
+           MOVE INP-DVZ        TO OUT-DVZ
+           MOVE IDX-ST         TO OUT-RETURN-CODE
+           STRING 'BASARILIOKUMAGERCEKLESTI RC:'IDX-ST 
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
+           MOVE IDX-NAME       TO OUT-FNAME-FROM
+           MOVE SPACES         TO OUT-FNAME-TO
+           MOVE IDX-SRNAME     TO OUT-LNAME-FORM
+           MOVE SPACES         TO OUT-LNAME-TO.
            WRITE OUT-REC.
        H760-END. EXIT.
-      *H770-SET-FLAG.
-           
-      *H770-END. EXIT.
+
+       H750-DELETE.
+               DELETE IDX-FILE RECORD
+                 NOT INVALID KEY
+                 DISPLAY 'DELETION SUCCESFULLY'
+               END-DELETE.
+               IF IDX-ST = 00
+                    DISPLAY 'BASARIILESILINDI'
+               ELSE
+                    DISPLAY 'HATAOLUSTU' IDX-ST.
+       H750-END. EXIT.
+
        H210-INVALID-KEY.
            DISPLAY 'INVALID KEY, PLEASE CHECK IT : ' IDX-KEY.
        H210-END. EXIT.
@@ -137,18 +146,22 @@
            IF WS-ISLEM-TIPI = 1
               COMPUTE WS-SUB-FUNC = 2
       *islem tipi delete ise kismini yap
-           
-           EVALUATE TRUE 
+           ELSE IF WS-ISLEM-TIPI = 2
+              COMPUTE WS-SUB-FUNC = 5
+           END-IF. 
+           EVALUATE TRUE
               WHEN WS-FUNC-READ
                 PERFORM H760-READ
+              WHEN WS-FUNC-DELETE
+                PERFORM H750-DELETE
               WHEN OTHER
                 DISPLAY 'WHEN OTHER'
            END-EVALUATE.
 
-      *     MOVE INP-ID           TO WS-SUB-ID.
+      *    MOVE INP-ID           TO WS-SUB-ID.
       *    MOVE INP-DVZ          TO WS-SUB-DVZ.
-      *    MOVE ZEROS            TO WS-SUB-RC.     
-      *    WRITE OUT-REC
+      *    MOVE ZEROS            TO WS-SUB-RC.
+      *    WRITE OUT-REC.
       *    READ INP-FILE.
        H220-END. EXIT.
 

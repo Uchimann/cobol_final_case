@@ -110,6 +110,10 @@
        H700-UPDATE.
            DISPLAY 'ISMAIL'.
        H700-END. EXIT.
+       
+       H770-WRITE.
+           DISPLAY 'WRITEKISMINDASIN'.
+       H770-END. EXIT.
 
        H760-READ.
            MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
@@ -126,8 +130,6 @@
        H760-END. EXIT.
 
        H750-DELETE.
-
-
            MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
            MOVE INP-ID         TO OUT-ID
            MOVE INP-DVZ        TO OUT-DVZ
@@ -136,22 +138,22 @@
            MOVE SPACES         TO OUT-FNAME-TO
            MOVE IDX-SRNAME     TO OUT-LNAME-FORM
            MOVE SPACES         TO OUT-LNAME-TO.
-           
-               DELETE IDX-FILE RECORD
-                 NOT INVALID KEY
-                    IF IDX-ST = 00
-                       STRING 'BASARILISILMEGERCEKLESTI RC:'IDX-ST
-                       DELIMITED BY SIZE INTO OUT-ACIKLAMA
-                       DISPLAY 'BASARIILESILINDI'
-                    ELSE
-                       STRING 'BASARSIZSILMEGERCEKLESTI RC:'IDX-ST
-                       DELIMITED BY SIZE INTO OUT-ACIKLAMA
-                       DISPLAY 'HATAOLUSTU' IDX-ST
-                    END-IF
-               END-DELETE.
+
+             DELETE IDX-FILE RECORD
+               NOT INVALID KEY
+                 IF IDX-ST = 00
+                      STRING 'BASARILISILMEGERCEKLESTI RC:'IDX-ST
+                      DELIMITED BY SIZE INTO OUT-ACIKLAMA
+                      DISPLAY 'BASARIILESILINDI'
+                 ELSE
+                      STRING 'BASARSIZSILMEGERCEKLESTI RC:'IDX-ST
+                      DELIMITED BY SIZE INTO OUT-ACIKLAMA
+                      DISPLAY 'HATAOLUSTU' IDX-ST
+                 END-IF
+             END-DELETE.
 
            WRITE OUT-REC.
-           
+
        H750-END. EXIT.
 
        H210-INVALID-KEY.
@@ -159,19 +161,23 @@
        H210-END. EXIT.
       *
        H220-VALID-KEY.
-      *INDEXDEKI HERSEYI OUT A MOVELAMAMIZ LAZIM
+      *ISLEM TIPI WRITE OLANI YAP
            MOVE INP-ISLEM-TIPI TO WS-ISLEM-TIPI
            IF WS-ISLEM-TIPI = 1
               COMPUTE WS-SUB-FUNC = 2
-      *islem tipi delete ise kismini yap
            ELSE IF WS-ISLEM-TIPI = 2
               COMPUTE WS-SUB-FUNC = 5
+           ELSE IF WS-ISLEM-TIPI = 3
+              COMPUTE WS-SUB-FUNC = 4
            END-IF.
+
            EVALUATE TRUE
               WHEN WS-FUNC-READ
                 PERFORM H760-READ
               WHEN WS-FUNC-DELETE
                 PERFORM H750-DELETE
+              WHEN WS-FUNC-WRITE 
+                 PERFORM H770-WRITE
               WHEN OTHER
                 DISPLAY 'WHEN OTHER'
            END-EVALUATE.

@@ -23,7 +23,7 @@
            05 OUT-ACIKLAMA      PIC X(30).
            05 OUT-FNAME-FROM    PIC X(15).
            05 OUT-FNAME-TO      PIC X(15).
-           05 OUT-LNAME-FORM    PIC X(15).
+           05 OUT-LNAME-FROM    PIC X(15).
            05 OUT-LNAME-TO      PIC X(15).
        FD  INP-FILE RECORDING MODE F.
          01  INP-REC.
@@ -110,10 +110,43 @@
        H700-UPDATE.
            DISPLAY 'ISMAIL'.
        H700-END. EXIT.
-       
+
        H770-WRITE.
-           DISPLAY 'WRITEKISMINDASIN'.
+           MOVE INP-ID      TO IDX-ID
+           MOVE INP-DVZ     TO IDX-DVZ
+           MOVE 'ISMAIIIL'  TO IDX-NAME
+           MOVE 'CELEBI'    TO IDX-SRNAME
+           WRITE IDX-REC.
+           DISPLAY 'WRITEKISMINDASIN'
+           MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
+           MOVE INP-ID            TO OUT-ID
+           MOVE INP-DVZ           TO OUT-DVZ
+           MOVE 'ISMAIL'          TO OUT-FNAME-FROM
+           MOVE SPACES            TO OUT-FNAME-TO
+           MOVE 'CELEBI'          TO OUT-LNAME-FROM
+           MOVE SPACES            TO OUT-LNAME-TO
+           MOVE IDX-ST            TO OUT-RETURN-CODE.
+           STRING 'BASARILIYAZMAGERCEKLESTI RC:'IDX-ST
+               DELIMITED BY SIZE INTO OUT-ACIKLAMA.
+           WRITE OUT-REC.
        H770-END. EXIT.
+       
+       H770-RECORD-FOUND.
+
+           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
+           MOVE INP-ID         TO OUT-ID
+           MOVE INP-DVZ        TO OUT-DVZ
+           MOVE 'ISMAIL'       TO OUT-FNAME-FROM
+           MOVE SPACES         TO OUT-FNAME-FROM
+           MOVE 'CELEBI'       TO OUT-LNAME-FROM
+           MOVE SPACES         TO OUT-LNAME-TO
+           MOVE IDX-ST         TO OUT-RETURN-CODE.
+           STRING 'EKLENMEDI... ZATEN VAR  RC: 'IDX-ST
+               DELIMITED BY SIZE INTO OUT-ACIKLAMA.
+           WRITE OUT-REC.
+
+       H770-END. EXIT.
+
 
        H760-READ.
            MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
@@ -124,7 +157,7 @@
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            MOVE IDX-NAME       TO OUT-FNAME-FROM
            MOVE SPACES         TO OUT-FNAME-TO
-           MOVE IDX-SRNAME     TO OUT-LNAME-FORM
+           MOVE IDX-SRNAME     TO OUT-LNAME-FROM
            MOVE SPACES         TO OUT-LNAME-TO.
            WRITE OUT-REC.
        H760-END. EXIT.
@@ -136,7 +169,7 @@
            MOVE IDX-ST         TO OUT-RETURN-CODE
            MOVE IDX-NAME       TO OUT-FNAME-FROM
            MOVE SPACES         TO OUT-FNAME-TO
-           MOVE IDX-SRNAME     TO OUT-LNAME-FORM
+           MOVE IDX-SRNAME     TO OUT-LNAME-FROM
            MOVE SPACES         TO OUT-LNAME-TO.
 
              DELETE IDX-FILE RECORD
@@ -157,6 +190,10 @@
        H750-END. EXIT.
 
        H210-INVALID-KEY.
+           MOVE INP-ISLEM-TIPI TO WS-ISLEM-TIPI
+           IF WS-ISLEM-TIPI = 3
+              PERFORM H770-WRITE
+           END-IF
            DISPLAY 'INVALID KEY, PLEASE CHECK IT : ' IDX-KEY.
        H210-END. EXIT.
       *
@@ -176,8 +213,8 @@
                 PERFORM H760-READ
               WHEN WS-FUNC-DELETE
                 PERFORM H750-DELETE
-              WHEN WS-FUNC-WRITE 
-                 PERFORM H770-WRITE
+              WHEN WS-FUNC-WRITE
+                 PERFORM H770-RECORD-FOUND
               WHEN OTHER
                 DISPLAY 'WHEN OTHER'
            END-EVALUATE.

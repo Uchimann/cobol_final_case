@@ -114,33 +114,35 @@
        H770-WRITE.
            MOVE INP-ID      TO IDX-ID
            MOVE INP-DVZ     TO IDX-DVZ
-           MOVE 'ISMAIIIL'  TO IDX-NAME
-           MOVE 'CELEBI'    TO IDX-SRNAME
+           MOVE 'ISMAIIIL       '  TO IDX-NAME
+           MOVE 'CELEBI         '    TO IDX-SRNAME
+
            WRITE IDX-REC.
+
            DISPLAY 'WRITEKISMINDASIN'
            MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
            MOVE INP-ID            TO OUT-ID
            MOVE INP-DVZ           TO OUT-DVZ
-           MOVE 'ISMAIL'          TO OUT-FNAME-FROM
-           MOVE SPACES            TO OUT-FNAME-TO
-           MOVE 'CELEBI'          TO OUT-LNAME-FROM
-           MOVE SPACES            TO OUT-LNAME-TO
+           MOVE 'ISMAIL         '          TO OUT-FNAME-FROM
+      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE 'CELEBI         '          TO OUT-LNAME-FROM
+      *     MOVE '               ' TO OUT-LNAME-TO
            MOVE IDX-ST            TO OUT-RETURN-CODE.
            STRING 'BASARILIYAZMAGERCEKLESTI RC:'IDX-ST
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            WRITE OUT-REC.
        H770-END. EXIT.
-       
+
        H770-RECORD-FOUND.
 
-           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
-           MOVE INP-ID         TO OUT-ID
-           MOVE INP-DVZ        TO OUT-DVZ
-           MOVE 'ISMAIL'       TO OUT-FNAME-FROM
-           MOVE SPACES         TO OUT-FNAME-FROM
-           MOVE 'CELEBI'       TO OUT-LNAME-FROM
-           MOVE SPACES         TO OUT-LNAME-TO
-           MOVE IDX-ST         TO OUT-RETURN-CODE.
+           MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
+           MOVE INP-ID            TO OUT-ID
+           MOVE INP-DVZ           TO OUT-DVZ
+           MOVE 'ISMAIL         ' TO OUT-FNAME-FROM
+      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE 'CELEBI         ' TO OUT-LNAME-FROM
+      *     MOVE '               ' TO OUT-LNAME-TO
+           MOVE IDX-ST            TO OUT-RETURN-CODE.
            STRING 'EKLENMEDI... ZATEN VAR  RC: 'IDX-ST
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            WRITE OUT-REC.
@@ -149,28 +151,28 @@
 
 
        H760-READ.
-           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
-           MOVE INP-ID         TO OUT-ID
-           MOVE INP-DVZ        TO OUT-DVZ
-           MOVE IDX-ST         TO OUT-RETURN-CODE
+           MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
+           MOVE INP-ID            TO OUT-ID
+           MOVE INP-DVZ           TO OUT-DVZ
+           MOVE IDX-ST            TO OUT-RETURN-CODE
            STRING 'BASARILIOKUMAGERCEKLESTI RC:'IDX-ST
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
-           MOVE IDX-NAME       TO OUT-FNAME-FROM
-           MOVE SPACES         TO OUT-FNAME-TO
-           MOVE IDX-SRNAME     TO OUT-LNAME-FROM
-           MOVE SPACES         TO OUT-LNAME-TO.
+           MOVE IDX-NAME          TO OUT-FNAME-FROM
+      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE IDX-SRNAME        TO OUT-LNAME-FROM
+      *     MOVE '               ' TO OUT-LNAME-TO.
            WRITE OUT-REC.
        H760-END. EXIT.
 
        H750-DELETE.
-           MOVE INP-ISLEM-TIPI TO OUT-ISLEM-TIPI
-           MOVE INP-ID         TO OUT-ID
-           MOVE INP-DVZ        TO OUT-DVZ
-           MOVE IDX-ST         TO OUT-RETURN-CODE
-           MOVE IDX-NAME       TO OUT-FNAME-FROM
-           MOVE SPACES         TO OUT-FNAME-TO
-           MOVE IDX-SRNAME     TO OUT-LNAME-FROM
-           MOVE SPACES         TO OUT-LNAME-TO.
+           MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
+           MOVE INP-ID            TO OUT-ID
+           MOVE INP-DVZ           TO OUT-DVZ
+           MOVE IDX-ST            TO OUT-RETURN-CODE
+           MOVE IDX-NAME          TO OUT-FNAME-FROM
+      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE IDX-SRNAME        TO OUT-LNAME-FROM
+      *     MOVE '               ' TO OUT-LNAME-TO.
 
              DELETE IDX-FILE RECORD
                NOT INVALID KEY
@@ -195,6 +197,20 @@
               PERFORM H770-WRITE
            END-IF
            DISPLAY 'INVALID KEY, PLEASE CHECK IT : ' IDX-KEY.
+           MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
+           MOVE INP-ID            TO OUT-ID
+           MOVE INP-DVZ           TO OUT-DVZ
+           MOVE IDX-ST            TO OUT-RETURN-CODE
+           STRING 'ERR: ID BULUNAMADI RC  :    'IDX-ST
+               DELIMITED BY SIZE INTO OUT-ACIKLAMA.
+           MOVE '               ' TO OUT-FNAME-FROM
+      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE '               ' TO OUT-LNAME-FROM
+      *     MOVE '               ' TO OUT-LNAME-TO.
+
+           IF WS-ISLEM-TIPI NOT = 3
+              WRITE OUT-REC
+           END-IF.
        H210-END. EXIT.
       *
        H220-VALID-KEY.

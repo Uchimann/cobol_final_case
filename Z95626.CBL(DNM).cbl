@@ -111,6 +111,8 @@
        H700-UPDATE.
 
            MOVE ZEROES TO OUT-FNAME-TO.
+           MOVE IDX-NAME          TO OUT-FNAME-FROM
+           MOVE IDX-SRNAME        TO OUT-LNAME-FROM
 
            COMPUTE J = 1
            PERFORM VARYING I FROM 1 BY 1 UNTIL I > LENGTH OF IDX-NAME
@@ -120,14 +122,25 @@
                    END-IF
            END-PERFORM.
 
+           INSPECT OUT-LNAME-FROM REPLACING
+                   ALL 'E' BY 'I'
+           INSPECT OUT-LNAME-FROM REPLACING
+                   ALL   'A' BY 'E'
+
+           MOVE OUT-FNAME-TO TO IDX-NAME
+           MOVE OUT-LNAME-TO TO IDX-SRNAME
+           REWRITE IDX-REC
+             NOT INVALID KEY
+                DISPLAY 'UPDATED NAME : ' IDX-NAME
+           END-REWRITE
+
+           COMPUTE J = (15 - J)
            MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
            MOVE INP-ID            TO OUT-ID
            MOVE INP-DVZ           TO OUT-DVZ
-           MOVE IDX-NAME          TO OUT-FNAME-FROM
-           MOVE IDX-SRNAME        TO OUT-LNAME-FROM
            MOVE IDX-ST            TO OUT-RETURN-CODE
-           MOVE ZEROES            TO OUT-LNAME-TO 
-            STRING 'BASARILIUPDTEGERCEKLESTI RC:'IDX-ST
+           MOVE ZEROES             TO OUT-LNAME-TO
+            STRING 'BASARILIUPDTE-SPACE COUNT  :'J
                 DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            WRITE OUT-REC.
        H700-END. EXIT.

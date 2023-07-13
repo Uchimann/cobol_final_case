@@ -63,7 +63,8 @@
               07 WS-SUB-DVZ     PIC 9(03).
               07 WS-SUB-RC      PIC 9(02).
               07 WS-SUB-DATA    PIC X(60).
-
+           05 I           PIC 9(3).
+           05 J           PIC 9(3) VALUE 1.
        PROCEDURE DIVISION.
        0000-MAIN.
            PERFORM H100-OPEN-FILES
@@ -108,7 +109,27 @@
        H200-END. EXIT.
 
        H700-UPDATE.
-           DISPLAY 'ISMAIL'.
+
+           MOVE ZEROES TO OUT-FNAME-TO.
+
+           COMPUTE J = 1
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > LENGTH OF IDX-NAME
+                   IF IDX-NAME(I:1) NOT EQUAL SPACE
+                      MOVE IDX-NAME(I:1) TO OUT-FNAME-TO(J:1)
+                      COMPUTE J = J + 1
+                   END-IF
+           END-PERFORM.
+
+           MOVE INP-ISLEM-TIPI    TO OUT-ISLEM-TIPI
+           MOVE INP-ID            TO OUT-ID
+           MOVE INP-DVZ           TO OUT-DVZ
+           MOVE IDX-NAME          TO OUT-FNAME-FROM
+           MOVE IDX-SRNAME        TO OUT-LNAME-FROM
+           MOVE IDX-ST            TO OUT-RETURN-CODE
+           MOVE ZEROES            TO OUT-LNAME-TO 
+            STRING 'BASARILIUPDTEGERCEKLESTI RC:'IDX-ST
+                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
+           WRITE OUT-REC.
        H700-END. EXIT.
 
        H770-WRITE.
@@ -158,9 +179,9 @@
            STRING 'BASARILIOKUMAGERCEKLESTI RC:'IDX-ST
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            MOVE IDX-NAME          TO OUT-FNAME-FROM
-      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE '               ' TO OUT-FNAME-TO
            MOVE IDX-SRNAME        TO OUT-LNAME-FROM
-      *     MOVE '               ' TO OUT-LNAME-TO.
+           MOVE '               ' TO OUT-LNAME-TO.
            WRITE OUT-REC.
        H760-END. EXIT.
 
@@ -173,7 +194,7 @@
       *     MOVE '               ' TO OUT-FNAME-TO
            MOVE IDX-SRNAME        TO OUT-LNAME-FROM
       *     MOVE '               ' TO OUT-LNAME-TO.
-
+      *buraya dogru id geliyor burasi gereksiz
              DELETE IDX-FILE RECORD
                NOT INVALID KEY
                  IF IDX-ST = 00
@@ -204,9 +225,9 @@
            STRING 'ERR: ID BULUNAMADI RC  :    'IDX-ST
                DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            MOVE '               ' TO OUT-FNAME-FROM
-      *     MOVE '               ' TO OUT-FNAME-TO
+           MOVE '               ' TO OUT-FNAME-TO
            MOVE '               ' TO OUT-LNAME-FROM
-      *     MOVE '               ' TO OUT-LNAME-TO.
+           MOVE '               ' TO OUT-LNAME-TO.
 
            IF WS-ISLEM-TIPI NOT = 3
               WRITE OUT-REC
@@ -222,6 +243,8 @@
               COMPUTE WS-SUB-FUNC = 5
            ELSE IF WS-ISLEM-TIPI = 3
               COMPUTE WS-SUB-FUNC = 4
+           ELSE IF WS-ISLEM-TIPI = 4
+              COMPUTE WS-SUB-FUNC = 3
            END-IF.
 
            EVALUATE TRUE
@@ -231,6 +254,8 @@
                 PERFORM H750-DELETE
               WHEN WS-FUNC-WRITE
                  PERFORM H770-RECORD-FOUND
+              WHEN WS-FUNC-UPDATE
+                 PERFORM H700-UPDATE
               WHEN OTHER
                 DISPLAY 'WHEN OTHER'
            END-EVALUATE.

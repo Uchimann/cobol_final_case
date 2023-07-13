@@ -109,10 +109,15 @@
        H200-END. EXIT.
 
        H700-UPDATE.
+      *OUT KISMINDA ELIMIZDE TUTMAK ICIN IKISINE DE ATTIK ISLEM YAPIP 
+      *BIRINI DEGISTIRCEZ DIGERI AYNI KALCAK
 
            MOVE ZEROES TO OUT-FNAME-TO.
+           MOVE ZEROES TO OUT-LNAME-TO.
            MOVE IDX-NAME          TO OUT-FNAME-FROM
+           MOVE IDX-NAME          TO OUT-FNAME-TO
            MOVE IDX-SRNAME        TO OUT-LNAME-FROM
+           MOVE IDX-SRNAME        TO OUT-LNAME-TO
 
            COMPUTE J = 1
            PERFORM VARYING I FROM 1 BY 1 UNTIL I > LENGTH OF IDX-NAME
@@ -122,16 +127,17 @@
                    END-IF
            END-PERFORM.
 
-           INSPECT OUT-LNAME-FROM REPLACING
+           INSPECT OUT-LNAME-TO REPLACING
                    ALL 'E' BY 'I'
-           INSPECT OUT-LNAME-FROM REPLACING
-                   ALL   'A' BY 'E'
+           INSPECT OUT-LNAME-TO REPLACING
+                   ALL 'A' BY 'E'
 
            MOVE OUT-FNAME-TO TO IDX-NAME
            MOVE OUT-LNAME-TO TO IDX-SRNAME
            REWRITE IDX-REC
              NOT INVALID KEY
                 DISPLAY 'UPDATED NAME : ' IDX-NAME
+                DISPLAY 'UPDATED SNAME: ' IDX-SRNAME 
            END-REWRITE
 
            COMPUTE J = (15 - J)
@@ -139,7 +145,6 @@
            MOVE INP-ID            TO OUT-ID
            MOVE INP-DVZ           TO OUT-DVZ
            MOVE IDX-ST            TO OUT-RETURN-CODE
-           MOVE ZEROES             TO OUT-LNAME-TO
             STRING 'BASARILIUPDTE-SPACE COUNT  :'J
                 DELIMITED BY SIZE INTO OUT-ACIKLAMA.
            WRITE OUT-REC.

@@ -28,7 +28,7 @@
               88 IDX-SUCCES                       VALUE 00 97.
        LINKAGE SECTION.
          01 WS-SUB-AREA.
-              07 WS-ISLEM-TIPI         PIC X(01).
+              07 WS-PRCSS-TYPE         PIC X(01).
               07 WS-SUB-FUNC           PIC 9(01).
                  88 WS-FUNC-OPEN                  VALUE 1.
                  88 WS-FUNC-READ                  VALUE 2.
@@ -36,7 +36,7 @@
                  88 WS-FUNC-WRITE                 VALUE 4.
                  88 WS-FUNC-DELETE                VALUE 5.
                  88 WS-FUNC-CLOSE                 VALUE 9.
-              07 SUB-OUT-ISLEM-TIPI    PIC X(01).
+              07 SUB-OUT-PRCSS-TYPE    PIC X(01).
               07 SUB-OUT-ID            PIC 9(05).
               07 SUB-OUT-DVZ           PIC 9(03).
               07 SUB-OUT-RETURN-CODE   PIC 9(02).
@@ -45,7 +45,7 @@
               07 SUB-OUT-FNAME-TO      PIC X(15).
               07 SUB-OUT-LNAME-FROM    PIC X(15).
               07 SUB-OUT-LNAME-TO      PIC X(15).
-              07 SUB-INP-ISLEM-TIPI    PIC X(01).
+              07 SUB-INP-PRCSS-TYPE    PIC X(01).
               07 SUB-INP-ID            PIC 9(5).
               07 SUB-INP-DVZ           PIC 9(3).
 
@@ -98,12 +98,12 @@
       *    Islem tipi 'W' ise kaydi eklemek icin H770 paragrafina gider.
       *----------------------------------------------------------------- 
        H210-INVALID-KEY.
-           MOVE SUB-INP-ISLEM-TIPI          TO WS-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO WS-PRCSS-TYPE
 
-           IF WS-ISLEM-TIPI = 'W'
+           IF WS-PRCSS-TYPE = 'W'
               PERFORM H770-WRITE
            ELSE
-              MOVE SUB-INP-ISLEM-TIPI       TO SUB-OUT-ISLEM-TIPI
+              MOVE SUB-INP-PRCSS-TYPE       TO SUB-OUT-PRCSS-TYPE
               MOVE SUB-INP-ID               TO SUB-OUT-ID
               MOVE SUB-INP-DVZ              TO SUB-OUT-DVZ
               MOVE IDX-ST                   TO SUB-OUT-RETURN-CODE
@@ -123,15 +123,15 @@
       *    yonlendirilir. Gecersiz islem durumunda hata mesajı verilir.
       *-----------------------------------------------------------------
        H220-VALID-KEY.
-           MOVE SUB-INP-ISLEM-TIPI          TO WS-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO WS-PRCSS-TYPE
 
-           IF WS-ISLEM-TIPI = 'R'
+           IF WS-PRCSS-TYPE = 'R'
               COMPUTE WS-SUB-FUNC = 2
-           ELSE IF WS-ISLEM-TIPI = 'D'
+           ELSE IF WS-PRCSS-TYPE = 'D'
               COMPUTE WS-SUB-FUNC = 5
-           ELSE IF WS-ISLEM-TIPI = 'W'
+           ELSE IF WS-PRCSS-TYPE = 'W'
               COMPUTE WS-SUB-FUNC = 4
-           ELSE IF WS-ISLEM-TIPI = 'U'
+           ELSE IF WS-PRCSS-TYPE = 'U'
               COMPUTE WS-SUB-FUNC = 3
            END-IF.
 
@@ -184,7 +184,7 @@
            END-REWRITE
 
            COMPUTE J = (15 - J)
-           MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO SUB-OUT-PRCSS-TYPE
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE
@@ -204,7 +204,7 @@
            MOVE 'CELEBI'                    TO IDX-SRNAME
            WRITE IDX-REC.
 
-           MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO SUB-OUT-PRCSS-TYPE
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE 'ISMAIL'                    TO SUB-OUT-FNAME-FROM
@@ -222,7 +222,7 @@
       *    eklenmedi zaten var mesaji verilir.
       *-----------------------------------------------------------------
        H770-RECORD-FOUND.
-           MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO SUB-OUT-PRCSS-TYPE
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE IDX-NAME                    TO SUB-OUT-FNAME-FROM
@@ -240,7 +240,7 @@
       *    birlikte SUB-OUT bolumlerine atilir.
       *-----------------------------------------------------------------
        H760-READ.
-           MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO SUB-OUT-PRCSS-TYPE
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE
@@ -258,7 +258,7 @@
       *    Hata durumunu kontrol eder.
       *-----------------------------------------------------------------
        H750-DELETE.
-           MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO SUB-OUT-PRCSS-TYPE
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE

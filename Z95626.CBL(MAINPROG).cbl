@@ -11,7 +11,7 @@
        FILE SECTION.
        FD  OUT-FILE RECORDING MODE F.
          01  OUT-REC.
-           05 OUT-ISLEM-TIPI           PIC X(01).
+           05 OUT-PRCSS-TYPE           PIC X(01).
            05 OUT-ID                   PIC 9(05).
            05 OUT-DVZ                  PIC 9(03).
            05 OUT-SPACE                PIC X(05).
@@ -25,7 +25,7 @@
            05 OUT-LNAME-TO             PIC X(15).
        FD  INP-FILE RECORDING MODE F.
          01  INP-REC.
-           07 INP-ISLEM-TIPI           PIC X(01).
+           07 INP-PRCSS-TYPE           PIC X(01).
            07 INP-ID                   PIC 9(5).
            07 INP-DVZ                  PIC 9(3).
        WORKING-STORAGE SECTION.
@@ -37,7 +37,7 @@
            05 OUT-ST                   PIC 9(02).
               88 OUT-SUCCESS                      VALUE 00 97.
          01 WS-SUB-AREA.
-              07 WS-ISLEM-TIPI         PIC X(01).
+              07 WS-PRCSS-TYPE         PIC X(01).
               07 WS-SUB-FUNC           PIC 9(01).
                  88 WS-FUNC-OPEN                  VALUE 1.
                  88 WS-FUNC-READ                  VALUE 2.
@@ -45,7 +45,7 @@
                  88 WS-FUNC-WRITE                 VALUE 4.
                  88 WS-FUNC-DELETE                VALUE 5.
                  88 WS-FUNC-CLOSE                 VALUE 9.
-              07 SUB-OUT-ISLEM-TIPI    PIC X(01).
+              07 SUB-OUT-PRCSS-TYPE    PIC X(01).
               07 SUB-OUT-ID            PIC 9(05).
               07 SUB-OUT-DVZ           PIC 9(03).
               07 SUB-OUT-RETURN-CODE   PIC 9(02).
@@ -54,7 +54,7 @@
               07 SUB-OUT-FNAME-TO      PIC X(15).
               07 SUB-OUT-LNAME-FROM    PIC X(15).
               07 SUB-OUT-LNAME-TO      PIC X(15).
-              07 SUB-INP-ISLEM-TIPI    PIC X(01).
+              07 SUB-INP-PRCSS-TYPE    PIC X(01).
               07 SUB-INP-ID            PIC 9(5).
               07 SUB-INP-DVZ           PIC 9(3).
        PROCEDURE DIVISION.
@@ -63,42 +63,46 @@
            PERFORM H200-PROCCES UNTIL INP-EOF
            PERFORM H999-PROGRAM-EXIT.
        0000-END. EXIT.
+
+
        H100-OPEN-FILES.
            OPEN INPUT  INP-FILE.
            OPEN OUTPUT OUT-FILE.
+
            IF (INP-ST NOT = 0) AND (INP-ST NOT = 97)
-           DISPLAY 'UNABLE TO OPEN INPFILE: ' INP-ST
-           MOVE INP-ST TO RETURN-CODE
-           PERFORM H999-PROGRAM-EXIT
+               DISPLAY 'UNABLE TO OPEN INPFILE: ' INP-ST
+               MOVE INP-ST TO RETURN-CODE
+               PERFORM H999-PROGRAM-EXIT
            END-IF.
            IF (OUT-ST NOT = 0) AND (OUT-ST NOT = 97)
-           DISPLAY 'UNABLE TO OPEN OUTFILE: ' OUT-ST
-           MOVE OUT-ST TO RETURN-CODE
-           PERFORM H999-PROGRAM-EXIT
+               DISPLAY 'UNABLE TO OPEN OUTFILE: ' OUT-ST
+               MOVE OUT-ST TO RETURN-CODE
+               PERFORM H999-PROGRAM-EXIT
            END-IF.
+
            READ INP-FILE
            SET WS-FUNC-OPEN TO TRUE.
        H100-END. EXIT.
 
+
        H200-PROCCES.
-       
-           MOVE INP-ISLEM-TIPI              TO SUB-INP-ISLEM-TIPI
+           MOVE INP-PRCSS-TYPE              TO SUB-INP-PRCSS-TYPE
            MOVE INP-ID                      TO SUB-INP-ID
            MOVE INP-DVZ                     TO SUB-INP-DVZ
 
-              IF INP-ISLEM-TIPI = 'R'
+              IF INP-PRCSS-TYPE = 'R'
                  CALL WS-SUBPROG USING WS-SUB-AREA
-              ELSE IF INP-ISLEM-TIPI = 'D'
+              ELSE IF INP-PRCSS-TYPE = 'D'
                  CALL WS-SUBPROG USING WS-SUB-AREA
-              ELSE IF INP-ISLEM-TIPI = 'W'
+              ELSE IF INP-PRCSS-TYPE = 'W'
                  CALL WS-SUBPROG USING WS-SUB-AREA
-              ELSE IF INP-ISLEM-TIPI = 'U'
+              ELSE IF INP-PRCSS-TYPE = 'U'
                  CALL WS-SUBPROG USING WS-SUB-AREA
               ELSE
-                 DISPLAY 'GECERSIZ ISLEM TIPI' INP-ISLEM-TIPI
+                 DISPLAY 'GECERSIZ ISLEM TIPI' INP-PRCSS-TYPE
               END-IF.
 
-           MOVE SUB-OUT-ISLEM-TIPI          TO   OUT-ISLEM-TIPI
+           MOVE SUB-OUT-PRCSS-TYPE          TO   OUT-PRCSS-TYPE
            MOVE SUB-OUT-ID                  TO   OUT-ID
            MOVE SUB-OUT-DVZ                 TO   OUT-DVZ
            MOVE SUB-OUT-RETURN-CODE         TO   OUT-RETURN-CODE
@@ -107,7 +111,7 @@
            MOVE SUB-OUT-FNAME-TO            TO   OUT-FNAME-TO
            MOVE SUB-OUT-LNAME-FROM          TO   OUT-LNAME-FROM
            MOVE SUB-OUT-LNAME-TO            TO   OUT-LNAME-TO
-           MOVE SUB-INP-ISLEM-TIPI          TO   INP-ISLEM-TIPI
+           MOVE SUB-INP-PRCSS-TYPE          TO   INP-PRCSS-TYPE
            MOVE SUB-INP-ID                  TO   INP-ID
            MOVE SUB-INP-DVZ                 TO   INP-DVZ
            MOVE ' RC: '                     TO   OUT-SPACE
@@ -115,6 +119,7 @@
            WRITE OUT-REC.
               READ INP-FILE.
        H200-END. EXIT.
+
 
        H999-PROGRAM-EXIT.
            CLOSE INP-FILE.

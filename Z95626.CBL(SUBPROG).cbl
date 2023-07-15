@@ -50,12 +50,23 @@
               07 SUB-INP-DVZ           PIC 9(3).
 
        PROCEDURE DIVISION USING WS-SUB-AREA.
+      *-----------------------------------------------------------------
+      *    MAIN: Dosyalari acar, basarili acildiysa,islem tipine gore 
+      *    navigasyon gorevi gorecek olan H400 paragrafina gider.
+      *    Islemler bitince H999 paragrafi ile programdan cikar.
+      *-----------------------------------------------------------------
        0000-MAIN.
            PERFORM H100-OPEN-FILES
            PERFORM H400-SUBPROG2
            PERFORM H999-PROGRAM-EXIT.
        0000-END. EXIT.
 
+
+      *-----------------------------------------------------------------
+      *    H100: Index dosyasini input ve output olarak acar.
+      *    Acilma durumunu kontrol eder ve dosya acilmadiysa program
+      *    exit paragrafina yonlendirir.
+      *-----------------------------------------------------------------
        H100-OPEN-FILES.
            OPEN I-O IDX-FILE.
            IF (IDX-ST NOT = 0) AND (IDX-ST NOT = 97)
@@ -63,10 +74,14 @@
                MOVE IDX-ST TO RETURN-CODE
                PERFORM H999-PROGRAM-EXIT
            END-IF.
-
-           SET WS-FUNC-OPEN TO TRUE.
        H100-END. EXIT.
 
+
+      *-----------------------------------------------------------------
+      *    H400:Veri dosyasindan bir kayit okur ve kayit mevcutsa 
+      *    H220-VALID-KEY paragrafina, mevcut degilse H210-INVALID-KEY
+      *    paragrafina yonlendirir.
+      *-----------------------------------------------------------------
        H400-SUBPROG2.
            MOVE SUB-INP-ID                  TO IDX-ID.
            MOVE SUB-INP-DVZ                 TO IDX-DVZ.
@@ -76,6 +91,73 @@
                 NOT INVALID KEY PERFORM H220-VALID-KEY.
        H400-END. EXIT.
 
+
+      *-----------------------------------------------------------------
+      *    H210:Islem tipi 'W' degilse isim ve soyisim alanlarina sifir
+      *    doldurur. ID bulunamadi mesajini verir.
+      *    Islem tipi 'W' ise kaydi eklemek icin H770 paragrafina gider.
+      *----------------------------------------------------------------- 
+       H210-INVALID-KEY.
+           MOVE SUB-INP-ISLEM-TIPI          TO WS-ISLEM-TIPI
+
+           IF WS-ISLEM-TIPI = 'W'
+              PERFORM H770-WRITE
+           ELSE
+              MOVE SUB-INP-ISLEM-TIPI       TO SUB-OUT-ISLEM-TIPI
+              MOVE SUB-INP-ID               TO SUB-OUT-ID
+              MOVE SUB-INP-DVZ              TO SUB-OUT-DVZ
+              MOVE IDX-ST                   TO SUB-OUT-RETURN-CODE
+              MOVE ZEROES                   TO SUB-OUT-FNAME-FROM
+              MOVE ZEROES                   TO SUB-OUT-FNAME-TO
+              MOVE ZEROES                   TO SUB-OUT-LNAME-FROM
+              MOVE ZEROES                   TO SUB-OUT-LNAME-TO
+                    STRING 'ERR: ID BULUNAMADI          : '
+                    DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
+           END-IF.
+       H210-END. EXIT.
+
+
+      *-----------------------------------------------------------------
+      *    H220:Islem turune bagli olarak WS-SUB-FUNC degeri hesaplanir.
+      *    Hesaplanan WS-SUB-FUNC degerine göre ilgili paragraflara
+      *    yonlendirilir. Gecersiz islem durumunda hata mesajı verilir.
+      *-----------------------------------------------------------------
+       H220-VALID-KEY.
+           MOVE SUB-INP-ISLEM-TIPI          TO WS-ISLEM-TIPI
+
+           IF WS-ISLEM-TIPI = 'R'
+              COMPUTE WS-SUB-FUNC = 2
+           ELSE IF WS-ISLEM-TIPI = 'D'
+              COMPUTE WS-SUB-FUNC = 5
+           ELSE IF WS-ISLEM-TIPI = 'W'
+              COMPUTE WS-SUB-FUNC = 4
+           ELSE IF WS-ISLEM-TIPI = 'U'
+              COMPUTE WS-SUB-FUNC = 3
+           END-IF.
+
+           EVALUATE TRUE
+              WHEN WS-FUNC-READ
+                PERFORM H760-READ
+              WHEN WS-FUNC-DELETE
+                PERFORM H750-DELETE
+              WHEN WS-FUNC-WRITE
+                 PERFORM H770-RECORD-FOUND
+              WHEN WS-FUNC-UPDATE
+                 PERFORM H700-UPDATE
+              WHEN OTHER
+                 STRING 'ERR: GECERSIZ ISLEM         : '
+                 DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
+                 DISPLAY 'GECERSIZ ISLEM'
+           END-EVALUATE.
+       H220-END. EXIT.
+
+
+      *-----------------------------------------------------------------
+      *    H700:Okunan isimdeki bosluklari atlayarak, SUB-OUT-FNAME-TO
+      *    degiskenine kopyalanir. Okunan soyisimdeki 'E'-'I', sonrasida
+      *    'A'-'E' donusumleri yapilir. REWRITE ile kayit guncellenir.
+      *    J degiskeni ile okunan bosluk sayisi mesaj olarak verilir.
+      *-----------------------------------------------------------------
        H700-UPDATE.
            MOVE ZEROES                      TO SUB-OUT-FNAME-FROM
            MOVE ZEROES                      TO SUB-OUT-LNAME-FROM
@@ -109,7 +191,12 @@
            STRING 'REC. UPDATED SPACE COUNT:   'J
                 DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
        H700-END. EXIT.
+      
 
+      *-----------------------------------------------------------------
+      *    H770:ID bulunamadi ise ve islem tipi 'W' ise calisir. 
+      *    Isım degiskenine 'ISMAIL'soyisim degiskenine 'CELEBI' atılır. 
+      *-----------------------------------------------------------------
        H770-WRITE.
            MOVE SUB-INP-ID                  TO IDX-ID
            MOVE SUB-INP-DVZ                 TO IDX-DVZ
@@ -129,8 +216,12 @@
                DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
        H770-END. EXIT.
 
-       H770-RECORD-FOUND.
 
+      *-----------------------------------------------------------------
+      *    H770:Islem tipi 'W' ise ve ID bulunur ise calisir. Kayit
+      *    eklenmedi zaten var mesaji verilir.
+      *-----------------------------------------------------------------
+       H770-RECORD-FOUND.
            MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
@@ -143,6 +234,11 @@
                DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
        H770-END. EXIT.
 
+
+      *-----------------------------------------------------------------
+      *    H760:ID bulundu ise, okunan kayit, basarili okuma mesaji ile 
+      *    birlikte SUB-OUT bolumlerine atilir.
+      *-----------------------------------------------------------------
        H760-READ.
            MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
@@ -156,6 +252,11 @@
            MOVE SPACES                      TO SUB-OUT-LNAME-TO.
        H760-END. EXIT.
 
+
+      *-----------------------------------------------------------------
+      *    H750:Okunan kaydin silme islemini gerceklestirir.
+      *    Hata durumunu kontrol eder.
+      *-----------------------------------------------------------------
        H750-DELETE.
            MOVE SUB-INP-ISLEM-TIPI          TO SUB-OUT-ISLEM-TIPI
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
@@ -176,54 +277,10 @@
                  END-IF.
        H750-END. EXIT.
 
-       H210-INVALID-KEY.
-           MOVE SUB-INP-ISLEM-TIPI          TO WS-ISLEM-TIPI
 
-           IF WS-ISLEM-TIPI = 'W'
-              PERFORM H770-WRITE
-           ELSE
-              MOVE SUB-INP-ISLEM-TIPI       TO SUB-OUT-ISLEM-TIPI
-              MOVE SUB-INP-ID               TO SUB-OUT-ID
-              MOVE SUB-INP-DVZ              TO SUB-OUT-DVZ
-              MOVE IDX-ST                   TO SUB-OUT-RETURN-CODE
-              MOVE ZEROES                   TO SUB-OUT-FNAME-FROM
-              MOVE ZEROES                   TO SUB-OUT-FNAME-TO
-              MOVE ZEROES                   TO SUB-OUT-LNAME-FROM
-              MOVE ZEROES                   TO SUB-OUT-LNAME-TO
-                    STRING 'ERR: ID BULUNAMADI          : '
-                    DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
-           END-IF.
-       H210-END. EXIT.
-
-       H220-VALID-KEY.
-           MOVE SUB-INP-ISLEM-TIPI          TO WS-ISLEM-TIPI
-
-           IF WS-ISLEM-TIPI = 'R'
-              COMPUTE WS-SUB-FUNC = 2
-           ELSE IF WS-ISLEM-TIPI = 'D'
-              COMPUTE WS-SUB-FUNC = 5
-           ELSE IF WS-ISLEM-TIPI = 'W'
-              COMPUTE WS-SUB-FUNC = 4
-           ELSE IF WS-ISLEM-TIPI = 'U'
-              COMPUTE WS-SUB-FUNC = 3
-           END-IF.
-
-           EVALUATE TRUE
-              WHEN WS-FUNC-READ
-                PERFORM H760-READ
-              WHEN WS-FUNC-DELETE
-                PERFORM H750-DELETE
-              WHEN WS-FUNC-WRITE
-                 PERFORM H770-RECORD-FOUND
-              WHEN WS-FUNC-UPDATE
-                 PERFORM H700-UPDATE
-              WHEN OTHER
-                 STRING 'ERR: GECERSIZ ISLEM         : '
-                 DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
-                 DISPLAY 'WHEN OTHER'
-           END-EVALUATE.
-       H220-END. EXIT.
-
+      *-----------------------------------------------------------------
+      *    Index dosyasini kapatir ve programin cagrildigi yere doner.
+      *-----------------------------------------------------------------
        H999-PROGRAM-EXIT.
            CLOSE IDX-FILE.
            GOBACK.

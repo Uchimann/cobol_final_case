@@ -58,6 +58,13 @@
               07 SUB-INP-ID            PIC 9(5).
               07 SUB-INP-DVZ           PIC 9(3).
        PROCEDURE DIVISION.
+      *-----------------------------------------------------------------
+      *    MAIN: H100 ile input ve output dosyalarini aciyor.Basari ile
+      *    acildiginda bir kayit okuyarak H200 paragrafina gidiyor.
+      *    Dosyanin sonuna kadar H200 paragrafini calistirir. En son
+      *    H999 ile dosyalari kapatir ve programi sonlandirir. 
+      *    H100 paragrafinda dosyalar acilmaz ise program devam etmez.
+      *----------------------------------------------------------------- 
        0000-MAIN.
            PERFORM H100-OPEN-FILES
            PERFORM H200-PROCCES UNTIL INP-EOF
@@ -65,6 +72,11 @@
        0000-END. EXIT.
 
 
+      *-----------------------------------------------------------------
+      *    H100:Dosya acma islemlerini yapar ve hata durumunu kontrol
+      *    eder. Sonrasinda bir kayit okur. WS-FUNC-OPEN True olarak 
+      *    isaretleyip paragrafi sonlandirir.
+      *-----------------------------------------------------------------
        H100-OPEN-FILES.
            OPEN INPUT  INP-FILE.
            OPEN OUTPUT OUT-FILE.
@@ -85,6 +97,14 @@
        H100-END. EXIT.
 
 
+      *-----------------------------------------------------------------
+      *    H200:Okunan inputu sub input alanlarina tasir. Input degeri
+      *    R,D,W veya U ise WS-SUB-AREA ile sub programı cagirir.
+      *    Sub programda veri alan sub out ve sub ınp degiskenlerini
+      *    Out alanlarina atarak Out dosyasina yazma islemi yapar.
+      *    Cikarken bir kayit daha okur ve cagrildigi alana(MAIN'de 
+      *    H200 satiri) geri doner.
+      *-----------------------------------------------------------------
        H200-PROCCES.
            MOVE INP-PRCSS-TYPE              TO SUB-INP-PRCSS-TYPE
            MOVE INP-ID                      TO SUB-INP-ID
@@ -115,12 +135,16 @@
            MOVE SUB-INP-ID                  TO   INP-ID
            MOVE SUB-INP-DVZ                 TO   INP-DVZ
            MOVE ' RC: '                     TO   OUT-SPACE
-           MOVE '-'                         TO   OUT-SPACE2
+           MOVE SPACE                       TO   OUT-SPACE2
            WRITE OUT-REC.
               READ INP-FILE.
        H200-END. EXIT.
 
-
+      
+      *-----------------------------------------------------------------
+      *    H999: Input ve output dosyalarini kapatma islemi yapar. 
+      *    Programi sonlandirir.
+      *-----------------------------------------------------------------
        H999-PROGRAM-EXIT.
            CLOSE INP-FILE.
            CLOSE OUT-FILE.

@@ -14,10 +14,11 @@
            05 OUT-ISLEM-TIPI    PIC 9(01).
            05 OUT-ID            PIC 9(05).
            05 OUT-DVZ           PIC 9(03).
-           05 OUT-SPACE         PIC X(01) VALUE SPACE.
+           05 OUT-SPACE         PIC X(05).
            05 OUT-RETURN-CODE   PIC 9(02).
+           05 FILLER            PIC X(01).
            05 OUT-ACIKLAMA      PIC X(30).
-           05 OUT-SPACE2        PIC X(01) VALUE SPACE.
+           05 OUT-SPACE2        PIC X(01).
            05 OUT-FNAME-FROM    PIC X(15).
            05 OUT-FNAME-TO      PIC X(15).
            05 OUT-LNAME-FROM    PIC X(15).
@@ -45,9 +46,6 @@
                  88 WS-FUNC-WRITE          VALUE 4.
                  88 WS-FUNC-DELETE         VALUE 5.
                  88 WS-FUNC-CLOSE          VALUE 9.
-      *       07 WS-SUB-ID      PIC 9(05).
-      *        07 WS-SUB-DVZ     PIC 9(03).
-      *        07 WS-SUB-RC      PIC 9(02).
               07 SUB-OUT-ISLEM-TIPI    PIC 9(01).
               07 SUB-OUT-ID            PIC 9(05).
               07 SUB-OUT-DVZ           PIC 9(03).
@@ -60,9 +58,6 @@
               07 SUB-INP-ISLEM-TIPI    PIC 9(01).
               07 SUB-INP-ID            PIC 9(5).
               07 SUB-INP-DVZ           PIC 9(3).
-      *SUBDATANIN ALT ELEMANLARI OLARAK OUTUN TÜM ALT ELEMANLARINI EKLE
-      *VSAMDA TÜM OUTLARI SUBDATA YAPCAZ
-
        PROCEDURE DIVISION.
        0000-MAIN.
            PERFORM H100-OPEN-FILES
@@ -87,20 +82,16 @@
        H100-END. EXIT.
 
        H200-PROCCES.
-      *input dosyasIndaki verileri ws subdaki verilere move'la
            MOVE INP-ISLEM-TIPI  TO SUB-INP-ISLEM-TIPI
            MOVE INP-ID          TO SUB-INP-ID
            MOVE INP-DVZ         TO SUB-INP-DVZ
-      *ISLLEMTIPI 5 ISE FUCKDOWNAYAZ
-      *ILK HANESI 1 SE SET TRUE READ ISLEMLERI YAP
+
            IF INP-ISLEM-TIPI < 6
-              DISPLAY 'INP ID' INP-ID 
-              DISPLAY 'INP SUB ID' SUB-INP-ID 
               CALL WS-SUBPROG USING WS-SUB-AREA
            ELSE
               DISPLAY 'YAPAMAZSIN'
            END-IF.
-      * SUB SUB DATADAN GELEN SEYLERI OUT A AT
+
            MOVE SUB-OUT-ISLEM-TIPI          TO   OUT-ISLEM-TIPI
            MOVE SUB-OUT-ID                  TO   OUT-ID
            MOVE SUB-OUT-DVZ                 TO   OUT-DVZ
@@ -113,6 +104,8 @@
            MOVE SUB-INP-ISLEM-TIPI          TO   INP-ISLEM-TIPI
            MOVE SUB-INP-ID                  TO   INP-ID
            MOVE SUB-INP-DVZ                 TO   INP-DVZ
+           MOVE ' RC: '                     TO   OUT-SPACE
+           MOVE '-'                         TO   OUT-SPACE2 
            WRITE OUT-REC.
               READ INP-FILE.
        H200-END. EXIT.

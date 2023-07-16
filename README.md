@@ -26,4 +26,45 @@ Programın doğru bir şekilde çalışabilmesi için aşağıdaki adımları iz
 
 Program çalıştırıldığında, ana program (MAINPROG) veri dosyalarını açacak, işlemleri gerçekleştirecek ve çıkış verilerini OUTFILE'a yazacak.
 
+## Örnek çalışma
+
+Aşağıda çıktı senaryosunda ne olacağı ile ilgili küçük bir örnek verilmiştir.
+
+### VSAM dosyasındaki veriler
+
+```bash
+10001840M E H M E T    AYDIN          1974261000000000000000
+10001918MEHMET         AYDIN          1974261000000000000000
+10003978ALI            YILMAZ         1996227000000000000000
+10004840RAMAZAN        YILMAZ         1996228000000000000000
+10004978RAMAZAN        YILMAZ         1996228000000000000000
+10008840MU STAFA       YILMAZ         2023152000000000000000
+10008949M U S TAFA     YILMAZ         2023152000000000000000
+10008978MUSTAFA        YILMAZ         2023152000000000000000
+```
+### INPUT dosyasındaki veriler
+
+```bash
+R10001840
+D10001840
+D19999999
+R10001840
+W10001840
+R10001840
+U10001840
+R10001840
+W10003978
+R10003978
+W19075555
+R19075555
+U19075555
+R19075555
+U10008949
+R10008949
+U10008949
+R10008949
+```
+### Çıktı dosyası
+
+
 

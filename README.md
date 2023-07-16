@@ -1,10 +1,10 @@
 # COBOL FINAL CASE
 
 Programımız bir ana program (MAINPROG) ve bir alt program (SUBPROG) içerir. Veri dosyasında (INP-FILE) bulunan kayıtları okuyarak başındaki harflere göre işlemler gerçekleştiriyoruz. 
-R = Read 
-U = Update
-W = Write
-D = Delete
+- R = Read  :Vsam dosyasından okunan veriyi çıktı dosyasına yazdırır.
+- U = Update:Vsam dosyasından bulunan verinin isimdeki boşluklarını siler ve soyisimdeki 'a' harflerini 'e', 'e' harflerini 'ı' yapar. Çıktıya yazdırır. Kaydı günceller
+- W = Write :Vsam dosyasına yeni bir kayıt ekler. İsmi 'İsmail' Soyismi 'Çelebi' olur. Eklenen kayıt çıktıya yazılır.
+- D = Delete:Vsam dosyasında bulunan kaydı siler. Çıktı dosyasına silindi bilgisi ile yazılır.
 
 ## Dosyaların Hazırlanması
 

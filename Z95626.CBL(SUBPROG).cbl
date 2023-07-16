@@ -51,7 +51,7 @@
 
        PROCEDURE DIVISION USING WS-SUB-AREA.
       *-----------------------------------------------------------------
-      *    MAIN: Dosyalari acar, basarili acildiysa,islem tipine gore 
+      *    MAIN: Dosyalari acar, basarili acildiysa,islem tipine gore
       *    navigasyon gorevi gorecek olan H400 paragrafina gider.
       *    Islemler bitince H999 paragrafi ile programdan cikar.
       *-----------------------------------------------------------------
@@ -78,7 +78,7 @@
 
 
       *-----------------------------------------------------------------
-      *    H400:Veri dosyasindan bir kayit okur ve kayit mevcutsa 
+      *    H400:Veri dosyasindan bir kayit okur ve kayit mevcutsa
       *    H220-VALID-KEY paragrafina, mevcut degilse H210-INVALID-KEY
       *    paragrafina yonlendirir.
       *-----------------------------------------------------------------
@@ -96,7 +96,7 @@
       *    H210:Islem tipi 'W' degilse isim ve soyisim alanlarina sifir
       *    doldurur. ID bulunamadi mesajini verir.
       *    Islem tipi 'W' ise kaydi eklemek icin H770 paragrafina gider.
-      *----------------------------------------------------------------- 
+      *-----------------------------------------------------------------
        H210-INVALID-KEY.
            MOVE SUB-INP-PRCSS-TYPE          TO WS-PRCSS-TYPE
 
@@ -111,28 +111,28 @@
               MOVE ZEROES                   TO SUB-OUT-FNAME-TO
               MOVE ZEROES                   TO SUB-OUT-LNAME-FROM
               MOVE ZEROES                   TO SUB-OUT-LNAME-TO
-                    STRING 'ERR: ID BULUNAMADI          : '
+                    STRING 'ERR: ID BULUNAMADI         :  '
                     DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
            END-IF.
        H210-END. EXIT.
 
 
       *-----------------------------------------------------------------
-      *    H220:Islem turune bagli olarak WS-SUB-FUNC degeri hesaplanir.
-      *    Hesaplanan WS-SUB-FUNC degerine göre ilgili paragraflara
-      *    yonlendirilir. Gecersiz islem durumunda hata mesajı verilir.
+      *    H220:Islem turune gore WS-SUB-FUNC'in TRUE degeri aranir.
+      *    TRUE olan WS-SUB-FUNC degerine göre ilgili paragraflara
+      *    yonlendirilir. Gecersiz islem durumunda hata mesaji verilir.
       *-----------------------------------------------------------------
        H220-VALID-KEY.
            MOVE SUB-INP-PRCSS-TYPE          TO WS-PRCSS-TYPE
 
            IF WS-PRCSS-TYPE = 'R'
-              COMPUTE WS-SUB-FUNC = 2
+              SET WS-FUNC-READ TO TRUE
            ELSE IF WS-PRCSS-TYPE = 'D'
-              COMPUTE WS-SUB-FUNC = 5
+              SET WS-FUNC-DELETE TO TRUE
            ELSE IF WS-PRCSS-TYPE = 'W'
-              COMPUTE WS-SUB-FUNC = 4
+              SET WS-FUNC-WRITE TO TRUE
            ELSE IF WS-PRCSS-TYPE = 'U'
-              COMPUTE WS-SUB-FUNC = 3
+              SET WS-FUNC-UPDATE TO TRUE
            END-IF.
 
            EVALUATE TRUE
@@ -145,7 +145,7 @@
               WHEN WS-FUNC-UPDATE
                  PERFORM H700-UPDATE
               WHEN OTHER
-                 STRING 'ERR: GECERSIZ ISLEM         : '
+                 STRING 'ERR: GECERSIZ ISLEM        :  '
                  DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
                  DISPLAY 'GECERSIZ ISLEM'
            END-EVALUATE.
@@ -188,14 +188,14 @@
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE
-           STRING 'REC. UPDATED SPACE COUNT:   'J
+           STRING 'REC. UPDATED SPACE COUNT   :'J
                 DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
        H700-END. EXIT.
-      
+
 
       *-----------------------------------------------------------------
-      *    H770:ID bulunamadi ise ve islem tipi 'W' ise calisir. 
-      *    Isım degiskenine 'ISMAIL'soyisim degiskenine 'CELEBI' atılır. 
+      *    H770:ID bulunamadi ise ve islem tipi 'W' ise calisir.
+      *    Isim degiskenine 'ISMAIL'soyisim degiskenine 'CELEBI' atilir.
       *-----------------------------------------------------------------
        H770-WRITE.
            MOVE SUB-INP-ID                  TO IDX-ID
@@ -212,7 +212,7 @@
            MOVE 'CELEBI'                    TO SUB-OUT-LNAME-FROM
            MOVE SPACES                      TO SUB-OUT-LNAME-TO
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE.
-           STRING 'YAZMAGERCEKLESTI            : '
+           STRING 'YAZMA GERCEKLESTI          :  '
                DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
        H770-END. EXIT.
 
@@ -230,13 +230,13 @@
            MOVE IDX-SRNAME                  TO SUB-OUT-LNAME-FROM
            MOVE SPACES                      TO SUB-OUT-LNAME-TO
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE.
-           STRING 'EKLENMEDI.ID ZATEN VAR      : '
+           STRING 'EKLENMEDI. ID ZATEN VAR    :  '
                DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
        H770-END. EXIT.
 
 
       *-----------------------------------------------------------------
-      *    H760:ID bulundu ise, okunan kayit, basarili okuma mesaji ile 
+      *    H760:ID bulundu ise, okunan kayit, basarili okuma mesaji ile
       *    birlikte SUB-OUT bolumlerine atilir.
       *-----------------------------------------------------------------
        H760-READ.
@@ -244,7 +244,7 @@
            MOVE SUB-INP-ID                  TO SUB-OUT-ID
            MOVE SUB-INP-DVZ                 TO SUB-OUT-DVZ
            MOVE IDX-ST                      TO SUB-OUT-RETURN-CODE
-           STRING 'BASARILI OKUMA              : '
+           STRING 'BASARILI OKUMA             :  '
                DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION.
            MOVE IDX-NAME                    TO SUB-OUT-FNAME-FROM
            MOVE SPACES                      TO SUB-OUT-FNAME-TO
@@ -269,10 +269,10 @@
 
              DELETE IDX-FILE RECORD
                  IF IDX-ST = 00
-                      STRING 'SILME GERCEKLESTI           : '
+                      STRING 'SILME GERCEKLESTI          :  '
                       DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
                  ELSE
-                      STRING 'SILME GERCEKLESMEDI         : '
+                      STRING 'SILME GERCEKLESMEDI        :  '
                       DELIMITED BY SIZE INTO SUB-OUT-DESCRIPTION
                  END-IF.
        H750-END. EXIT.

@@ -66,22 +66,23 @@ R10008949
 ```
 ### Çıktı dosyası
 
-R10001840 RC: 00.BASARILI OKUMA             :   M E H M E T                   
-D10001840 RC: 00.SILME GERCEKLESTI          :   M E H M E T                   
-D19999999 RC: 23.ERR: ID BULUNAMADI         :   000000000000000000000000000000
-R10001840 RC: 23.ERR: ID BULUNAMADI         :   000000000000000000000000000000
-W10001840 RC: 00.YAZMA GERCEKLESTI          :   ISMAIL                        
-R10001840 RC: 00.BASARILI OKUMA             :   ISMAIL                        
-U10001840 RC: 00.REC. UPDATED SPACE COUNT   :08 ISMAIL         ISMAIL         
-R10001840 RC: 00.BASARILI OKUMA             :   ISMAIL                        
-W10003978 RC: 00.EKLENMEDI. ID ZATEN VAR    :   ALI                           
-R10003978 RC: 00.BASARILI OKUMA             :   ALI                           
-W19075555 RC: 00.YAZMA GERCEKLESTI          :   ISMAIL                        
-R19075555 RC: 00.BASARILI OKUMA             :   ISMAIL                        
-U19075555 RC: 00.REC. UPDATED SPACE COUNT   :08 ISMAIL         ISMAIL         
-R19075555 RC: 00.BASARILI OKUMA             :   ISMAIL                        
-U10008949 RC: 00.REC. UPDATED SPACE COUNT   :07 M U S TAFA     MUSTAFA        
-R10008949 RC: 00.BASARILI OKUMA             :   MUSTAFA                       
-U10008949 RC: 00.REC. UPDATED SPACE COUNT   :07 MUSTAFA        MUSTAFA        
-R10008949 RC: 00.BASARILI OKUMA             :   MUSTAFA                       
-
+```bash
+R10001840 RC: 00.BASARILI OKUMA             :   M E H M E T                   AYDIN                         
+D10001840 RC: 00.SILME GERCEKLESTI          :   M E H M E T                   AYDIN                         
+D19999999 RC: 23.ERR: ID BULUNAMADI         :   000000000000000000000000000000000000000000000000000000000000
+R10001840 RC: 23.ERR: ID BULUNAMADI         :   000000000000000000000000000000000000000000000000000000000000
+W10001840 RC: 00.YAZMA GERCEKLESTI          :   ISMAIL                        CELEBI                        
+R10001840 RC: 00.BASARILI OKUMA             :   ISMAIL                        CELEBI                        
+U10001840 RC: 00.REC. UPDATED SPACE COUNT   :08 ISMAIL         ISMAIL         CELEBI         CILIBI         
+R10001840 RC: 00.BASARILI OKUMA             :   ISMAIL                        CILIBI                        
+W10003978 RC: 00.EKLENMEDI. ID ZATEN VAR    :   ALI                           YILMAZ                        
+R10003978 RC: 00.BASARILI OKUMA             :   ALI                           YILMAZ                        
+W19075555 RC: 00.YAZMA GERCEKLESTI          :   ISMAIL                        CELEBI                        
+R19075555 RC: 00.BASARILI OKUMA             :   ISMAIL                        CELEBI                        
+U19075555 RC: 00.REC. UPDATED SPACE COUNT   :08 ISMAIL         ISMAIL         CELEBI         CILIBI         
+R19075555 RC: 00.BASARILI OKUMA             :   ISMAIL                        CILIBI                        
+U10008949 RC: 00.REC. UPDATED SPACE COUNT   :07 M U S TAFA     MUSTAFA        YILMAZ         YILMEZ         
+R10008949 RC: 00.BASARILI OKUMA             :   MUSTAFA                       YILMEZ                        
+U10008949 RC: 00.REC. UPDATED SPACE COUNT   :07 MUSTAFA        MUSTAFA        YILMEZ         YILMIZ         
+R10008949 RC: 00.BASARILI OKUMA             :   MUSTAFA                       YILMIZ                        
+```
